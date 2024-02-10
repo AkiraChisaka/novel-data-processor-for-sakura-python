@@ -79,37 +79,6 @@ def core(jp_file_path, cn_file_path):
     print("Files have been processed and overwritten.\n\n-----\n")
 
 
-# def realign_texts(jp_lines, cn_lines, current_line=0, chaos=INITIAL_CHAOS):
-#     # If the current line is out of bounds, it's a sign that we are done
-#     if current_line >= len(jp_lines) or current_line >= len(cn_lines):
-#         print("One of the lists has run out of entries.")
-#         return
-
-#     # If the chaos intensity is too high, this means that the lists are too different and we should stop
-#     if chaos > MAX_CHAOS_PERMITTED:
-#         raise ChaosOverflow(chaos, current_line)
-
-#     # If the lines are the same, no further processing is needed
-#     if jp_lines[current_line][1:] == cn_lines[current_line][1:]:
-#         return realign_texts(jp_lines, cn_lines, current_line + 1, lower_chaos(chaos))
-
-#     # If the lines differ, we will see if we can fix the alignment by adding an empty line before one of the lists
-#     # We should do so for the list that does not currently have a line that's empty
-#     print(f"Difference occurred at line {current_line + 1}.")
-#     if jp_lines[current_line][1:] == []:
-#         print("JP line is empty. Adding an error correct line to the CN list.")
-#         cn_lines.insert(current_line, [';'])
-#         chaos = raise_chaos(chaos, CHAOS_RISE_ON_SIMPLE_LINE_FIX)
-#     elif cn_lines[current_line][1:] == []:
-#         print("CN line is empty. Adding an error correct line to the JP list.")
-#         jp_lines.insert(current_line, [';'])
-#         chaos = raise_chaos(chaos, CHAOS_RISE_ON_SIMPLE_LINE_FIX)
-#     else:
-#         # If all else fails, throw an exception
-#         raise Exception(f"Could not realign the lists at line {current_line + 1}. Stopping the realignment process.\n")
-
-#     return realign_texts(jp_lines, cn_lines, current_line + 1, chaos)
-
 def realign_texts(jp_lines, cn_lines, current_line=0, chaos=INITIAL_CHAOS):
     while current_line < len(jp_lines) and current_line < len(cn_lines):
         # TEST prints
@@ -132,7 +101,7 @@ def realign_texts(jp_lines, cn_lines, current_line=0, chaos=INITIAL_CHAOS):
         if jp_lines[current_line][1:] != [] and cn_lines[current_line][1:] != []:
             # TODO implement further processing to handle the case where both lines are not empty
             raise Exception(f"Could not realign the lists at line {current_line + 1}. Stopping the realignment process.\n")
-        
+
         # If one of the lines is empty, add an error correct line to the other list
         elif jp_lines[current_line][1:] == []:
             print("JP line is empty. Adding an error correct line to the CN list.")
