@@ -1,6 +1,11 @@
 import argparse  # Import the argparse module
 import re  # Import the regular expressions module
 
+# Constants
+INITIAL_CHAOS = 0
+MAX_CHAOS_PERMITTED = 100
+CHAOS_RISE_ON_SIMPLE_LINE_FIX = 5
+
 
 def main():
     parser = argparse.ArgumentParser(description="Align Japanese and Chinese text files.")
@@ -40,7 +45,15 @@ def core(jp_file_path, cn_file_path):
     print("\nCN List:")
     print_list_readable(cn_lines)
 
-    # realign_texts(jp_lines, cn_lines)
+    try:
+        realign_texts(jp_lines, cn_lines)
+    except Exception as e:
+        print(f"An error occurred during realignment: {str(e)}")
+        print("Proceeding to overwrite the original files with the processed content.")
+
+    # Reconstruct the content from the lists
+    jp_content = '\n'.join([sublist[0] for sublist in jp_lines])
+    cn_content = '\n'.join([sublist[0] for sublist in cn_lines])
 
     # Overwrite the original files with the processed content
     write_file(jp_file_path, jp_content)
@@ -49,10 +62,48 @@ def core(jp_file_path, cn_file_path):
     print("Files have been processed and overwritten with cleaned content.")
 
 
-# def realign_texts(jp_lines, cn_lines):
-#     # Convert content back to lists of lines for easy manipulation
-#     jp_lines = jp_content.split('\n')
-#     cn_lines = cn_content.split('\n')
+def realign_texts(jp_lines, cn_lines, current_line=0, chaos=INITIAL_CHAOS):
+    # If the chaos intensity is too high, this means that the lists are too different and we should stop
+    if chaos > MAX_CHAOS_PERMITTED:
+        raise Exception(f"Chaos intensity too high. Stopping the realignment process.\n" +
+                        f"Current chaos intensity: {chaos}" +
+                        f"Current line: {current_line + 1}")
+
+    # If the lines are the same, no further processing is needed
+    if jp_lines[current_line][1:] == cn_lines[current_line][1:]:
+        return realign_texts(jp_lines, cn_lines, current_line + 1, lower_chaos(chaos))
+
+    # If the lines differ, we will see if we can fix the alignment by adding an empty line before one of the lists
+    # We should do so for the list that does not currently have a line that's empty
+    print(f"Difference occurred at line {current_line + 1}.")
+    if jp_lines[current_line][1:] == []:
+        print("JP line is empty. Adding an empty line to the CN list.")
+        cn_lines.insert(current_line, [''])
+        chaos = raise_chaos(chaos, CHAOS_RISE_ON_SIMPLE_LINE_FIX)
+    elif cn_lines[current_line][1:] == []:
+        print("CN line is empty. Adding an empty line to the JP list.")
+        jp_lines.insert(current_line, [''])
+        chaos = raise_chaos(chaos, CHAOS_RISE_ON_SIMPLE_LINE_FIX)
+    else:
+        # If all else fails, throw an exception
+        raise Exception(f"Could not realign the lists at line {current_line + 1}. Stopping the realignment process.\n")
+
+    return realign_texts(jp_lines, cn_lines, current_line + 1, chaos)
+
+
+def raise_chaos(chaos, increase=0):
+    new_chaos = chaos + increase
+    print(f"Raising chaos by {increase}, current chaos: {new_chaos}")
+    return new_chaos
+
+
+def lower_chaos(chaos, decrease=1):
+    new_chaos = chaos - decrease
+    if new_chaos < 0:
+        new_chaos = 0
+    if decrease != 1:
+        print(f"Decreasing chaos by {decrease}, current chaos: {new_chaos}")
+    return new_chaos
 
 
 def initialize_list_for_content(content):
@@ -76,6 +127,8 @@ def read_file(file_path):
 
 
 def write_file(file_path, content):
+    # For testing purposes, use a different file name to avoid overwriting the original file
+    # file_path = file_path.replace('.txt', '_processed.txt')
     # Overwrite a file with the given content
     with open(file_path, 'w', encoding='utf-8') as file:
         file.write(content)
