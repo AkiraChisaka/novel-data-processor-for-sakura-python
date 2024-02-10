@@ -1,4 +1,5 @@
 # settings.py
+ANCHOR_SYMBOLS = ["「", "」", "『", "』"]
 INITIAL_CHAOS = 0
 MAX_CHAOS_PERMITTED = 100
 CHAOS_RISE_ON_SIMPLE_LINE_FIX = 5

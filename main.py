@@ -31,39 +31,25 @@ def core(jp_file_path, cn_file_path):
 
     print("\nPreprocessing completed. Proceeding to align the files.")
 
-    # Initialize lists based on the content line count
-    jp_lines = initialize_list_for_content(jp_content)
-    cn_lines = initialize_list_for_content(cn_content)
-
-    # Loop through each symbol and fill the lists with occurrences
-    anchor_symbols = ["「", "」", "『", "』"]
-    for symbol in anchor_symbols:
-        fill_list_with_anchors(jp_lines, symbol)
-        fill_list_with_anchors(cn_lines, symbol)
-
-    # Print the processed lists
-    # print("\nJP List:")
-    # print_list_readable(jp_lines)
-    # print("\nCN List:")
-    # print_list_readable(cn_lines)
-
-    aligner = TextAlignment(jp_lines, cn_lines)
+    aligner = TextAlignment(jp_content, cn_content)
 
     try:
         # Test
-        # raise ChaosOverflow(1000, 10)
+        raise ChaosOverflow(1000, 10)
         aligner.realign_texts()
     except ChaosOverflow as e:
         print("Realignment process ended due to Chaos Overflow:", e)
-    except Exception as e:
+    except RealignmentFailed as e:
         print("Realignment process ended due to Exception:", e)
+    except Exception as e:
+        print("Realignment process ended due to unforeseen Exception:", e)
         raise e
 
     print("Proceeding to overwrite the original files with the processed content.")
 
     # Reconstruct the content from the lists
-    jp_content = '\n'.join([sublist[0] for sublist in jp_lines])
-    cn_content = '\n'.join([sublist[0] for sublist in cn_lines])
+    jp_content = '\n'.join([sublist[0] for sublist in aligner.jp_lines])
+    cn_content = '\n'.join([sublist[0] for sublist in aligner.cn_lines])
 
     # Overwrite the original files with the processed content
     write_file(jp_file_path, jp_content)
@@ -72,77 +58,18 @@ def core(jp_file_path, cn_file_path):
     print("Files have been processed and overwritten.\n\n-----\n")
 
 
-# def realign_texts(jp_lines, cn_lines, current_line=0, chaos=INITIAL_CHAOS):
-#     while current_line < len(jp_lines) and current_line < len(cn_lines):
-#         # TEST prints
-#         # print(f"Current line: {current_line + 1}")
-#         # print(f"Chaos: {chaos}")
-
-#         # If the chaos intensity is too high, this means that the lists are too different and we should stop
-#         if chaos > MAX_CHAOS_PERMITTED:
-#             raise ChaosOverflow(chaos, current_line)
-
-#         # If the lines are the same, no further processing is needed
-#         if jp_lines[current_line][1:] == cn_lines[current_line][1:]:
-#             chaos = lower_chaos(chaos)
-#             current_line += 1
-#             continue
-
-#         # If the lines differ, we will see if we can fix the alignment by adding an empty line before one of the lists
-#         # We should do so for the list that does not currently have a line that's empty
-#         print(f"Difference occurred at line {current_line + 1}.")
-#         if jp_lines[current_line][1:] != [] and cn_lines[current_line][1:] != []:
-#             # TODO implement further processing to handle the case where both lines are not empty
-#             raise Exception(f"Could not realign the lists at line {current_line + 1}. Stopping the realignment process.\n")
-
-#         # If one of the lines is empty, add an error correct line to the other list
-#         elif jp_lines[current_line][1:] == []:
-#             print("JP line is empty. Adding an error correct line to the CN list.")
-#             cn_lines.insert(current_line, [';'])
-#             chaos = raise_chaos(chaos, CHAOS_RISE_ON_SIMPLE_LINE_FIX)
-#             current_line += 1
-#             continue
-#         elif cn_lines[current_line][1:] == []:
-#             print("CN line is empty. Adding an error correct line to the JP list.")
-#             jp_lines.insert(current_line, [';'])
-#             chaos = raise_chaos(chaos, CHAOS_RISE_ON_SIMPLE_LINE_FIX)
-#             current_line += 1
-#             continue
-
-#         # If all else fails, something went horribly wrong
-#         raise Exception(f"Something horribly wrong happened at line {current_line + 1}.\n")
-
-#     print("Realignment process completed successfully.")
-#     return
+# def initialize_list_for_content(content):
+#     lines = content.split('\n')
+#     # Initialize a list with an empty list for each line of content
+#     return [[line] for line in lines]
 
 
-# def raise_chaos(chaos, increase=0):
-#     new_chaos = chaos + increase
-#     print(f"Raising chaos by {increase}, current chaos: {new_chaos}")
-#     return new_chaos
-
-
-# def lower_chaos(chaos, decrease=1):
-#     new_chaos = chaos - decrease
-#     if new_chaos < 0:
-#         new_chaos = 0
-#     if decrease != 1:
-#         print(f"Decreasing chaos by {decrease}, current chaos: {new_chaos}")
-#     return new_chaos
-
-
-def initialize_list_for_content(content):
-    lines = content.split('\n')
-    # Initialize a list with an empty list for each line of content
-    return [[line] for line in lines]
-
-
-def fill_list_with_anchors(content_lines, symbol):
-    lines = [entry[0] for entry in content_lines]
-    for index, line in enumerate(lines):
-        if symbol in line:
-            # Assuming you want to store the line itself or just mark the presence of the symbol
-            content_lines[index].append(symbol)  # Or append(line) to store the whole line
+# def fill_list_with_anchors(content_lines, symbol):
+#     lines = [entry[0] for entry in content_lines]
+#     for index, line in enumerate(lines):
+#         if symbol in line:
+#             # Assuming you want to store the line itself or just mark the presence of the symbol
+#             content_lines[index].append(symbol)  # Or append(line) to store the whole line
 
 
 def read_file(file_path):
