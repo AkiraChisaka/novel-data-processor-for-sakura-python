@@ -2,9 +2,8 @@ import argparse  # Import the argparse module
 import re  # Import the regular expressions module
 
 
-from settings import *
-from exceptions import *
 from text_alignment import TextAlignment
+from exceptions import ChaosOverflow, RealignmentFailed
 
 
 def main():
@@ -31,8 +30,8 @@ def core(jp_file_path, cn_file_path):
 
     print("\nPreprocessing completed. Proceeding to align the files.")
 
+    # Creating an instance of the TextAlignment class to realign the texts
     aligner = TextAlignment(jp_content, cn_content)
-
     try:
         # Test
         # raise ChaosOverflow(1000, 10)

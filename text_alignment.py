@@ -1,5 +1,5 @@
-from settings import *
-from exceptions import *
+from settings import INITIAL_CHAOS, ANCHOR_SYMBOLS, MAX_CHAOS_PERMITTED, CHAOS_RISE_ON_SIMPLE_LINE_FIX
+from exceptions import ChaosOverflow, RealignmentFailed
 
 
 class TextAlignment:
