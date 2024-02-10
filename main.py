@@ -10,10 +10,10 @@ def main():
     args = parser.parse_args()
 
     # Process the files based on the provided arguments
-    process_files(args.jp_file, args.cn_file)
+    core(args.jp_file, args.cn_file)
 
 
-def process_files(jp_file_path, cn_file_path):
+def core(jp_file_path, cn_file_path):
     print(f"Processing files: {jp_file_path} and {cn_file_path}")
 
     # Read the content of both files
@@ -29,12 +29,15 @@ def process_files(jp_file_path, cn_file_path):
     cn_list = initialize_list_for_content(cn_content)
 
     # Loop through each symbol and fill the lists with occurrences
-    for symbol in ["「", "」", "『", "』"]:
+    anchor_symbols = ["「", "」", "『", "』"]
+    for symbol in anchor_symbols:
         fill_list_with_anchors(jp_content, jp_list, symbol)
         fill_list_with_anchors(cn_content, cn_list, symbol)
 
     # Print the processed lists
+    print("\nJP List:")
     print_list_readable(jp_list)
+    print("\nCN List:")
     print_list_readable(cn_list)
 
     # Overwrite the original files with the processed content
@@ -100,8 +103,8 @@ def remove_surrounding_symbols(content, symbol):
 
 def print_list_readable(lst):
     for index, sublist in enumerate(lst):
-        print(f"Line {index + 1}: {sublist}")
-
+        if sublist:
+            print(f"Line {index + 1}: {sublist}")
 
 if __name__ == "__main__":
     main()
