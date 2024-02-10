@@ -1,20 +1,10 @@
 import argparse  # Import the argparse module
 import re  # Import the regular expressions module
 
-# Constants
-INITIAL_CHAOS = 0
-MAX_CHAOS_PERMITTED = 100
-CHAOS_RISE_ON_SIMPLE_LINE_FIX = 5
 
-
-# Exceptions
-class ChaosOverflow(Exception):
-    def __init__(self, chaos, current_line):
-        super().__init__(f"Chaos intensity too high. Stopping the realignment process.\n" +
-                         f"Current chaos intensity: {chaos}\n" +
-                         f"Current line: {current_line + 1}")
-        self.chaos = chaos
-        self.current_line = current_line
+from settings import *
+from exceptions import *
+from text_alignment import TextAlignment
 
 
 def main():
@@ -57,14 +47,17 @@ def core(jp_file_path, cn_file_path):
     # print("\nCN List:")
     # print_list_readable(cn_lines)
 
+    aligner = TextAlignment(jp_lines, cn_lines)
+
     try:
         # Test
         # raise ChaosOverflow(1000, 10)
-        realign_texts(jp_lines, cn_lines)
+        aligner.realign_texts()
     except ChaosOverflow as e:
         print("Realignment process ended due to Chaos Overflow:", e)
     except Exception as e:
         print("Realignment process ended due to Exception:", e)
+        raise e
 
     print("Proceeding to overwrite the original files with the processed content.")
 
@@ -79,63 +72,63 @@ def core(jp_file_path, cn_file_path):
     print("Files have been processed and overwritten.\n\n-----\n")
 
 
-def realign_texts(jp_lines, cn_lines, current_line=0, chaos=INITIAL_CHAOS):
-    while current_line < len(jp_lines) and current_line < len(cn_lines):
-        # TEST prints
-        # print(f"Current line: {current_line + 1}")
-        # print(f"Chaos: {chaos}")
+# def realign_texts(jp_lines, cn_lines, current_line=0, chaos=INITIAL_CHAOS):
+#     while current_line < len(jp_lines) and current_line < len(cn_lines):
+#         # TEST prints
+#         # print(f"Current line: {current_line + 1}")
+#         # print(f"Chaos: {chaos}")
 
-        # If the chaos intensity is too high, this means that the lists are too different and we should stop
-        if chaos > MAX_CHAOS_PERMITTED:
-            raise ChaosOverflow(chaos, current_line)
+#         # If the chaos intensity is too high, this means that the lists are too different and we should stop
+#         if chaos > MAX_CHAOS_PERMITTED:
+#             raise ChaosOverflow(chaos, current_line)
 
-        # If the lines are the same, no further processing is needed
-        if jp_lines[current_line][1:] == cn_lines[current_line][1:]:
-            chaos = lower_chaos(chaos)
-            current_line += 1
-            continue
+#         # If the lines are the same, no further processing is needed
+#         if jp_lines[current_line][1:] == cn_lines[current_line][1:]:
+#             chaos = lower_chaos(chaos)
+#             current_line += 1
+#             continue
 
-        # If the lines differ, we will see if we can fix the alignment by adding an empty line before one of the lists
-        # We should do so for the list that does not currently have a line that's empty
-        print(f"Difference occurred at line {current_line + 1}.")
-        if jp_lines[current_line][1:] != [] and cn_lines[current_line][1:] != []:
-            # TODO implement further processing to handle the case where both lines are not empty
-            raise Exception(f"Could not realign the lists at line {current_line + 1}. Stopping the realignment process.\n")
+#         # If the lines differ, we will see if we can fix the alignment by adding an empty line before one of the lists
+#         # We should do so for the list that does not currently have a line that's empty
+#         print(f"Difference occurred at line {current_line + 1}.")
+#         if jp_lines[current_line][1:] != [] and cn_lines[current_line][1:] != []:
+#             # TODO implement further processing to handle the case where both lines are not empty
+#             raise Exception(f"Could not realign the lists at line {current_line + 1}. Stopping the realignment process.\n")
 
-        # If one of the lines is empty, add an error correct line to the other list
-        elif jp_lines[current_line][1:] == []:
-            print("JP line is empty. Adding an error correct line to the CN list.")
-            cn_lines.insert(current_line, [';'])
-            chaos = raise_chaos(chaos, CHAOS_RISE_ON_SIMPLE_LINE_FIX)
-            current_line += 1
-            continue
-        elif cn_lines[current_line][1:] == []:
-            print("CN line is empty. Adding an error correct line to the JP list.")
-            jp_lines.insert(current_line, [';'])
-            chaos = raise_chaos(chaos, CHAOS_RISE_ON_SIMPLE_LINE_FIX)
-            current_line += 1
-            continue
+#         # If one of the lines is empty, add an error correct line to the other list
+#         elif jp_lines[current_line][1:] == []:
+#             print("JP line is empty. Adding an error correct line to the CN list.")
+#             cn_lines.insert(current_line, [';'])
+#             chaos = raise_chaos(chaos, CHAOS_RISE_ON_SIMPLE_LINE_FIX)
+#             current_line += 1
+#             continue
+#         elif cn_lines[current_line][1:] == []:
+#             print("CN line is empty. Adding an error correct line to the JP list.")
+#             jp_lines.insert(current_line, [';'])
+#             chaos = raise_chaos(chaos, CHAOS_RISE_ON_SIMPLE_LINE_FIX)
+#             current_line += 1
+#             continue
 
-        # If all else fails, something went horribly wrong
-        raise Exception(f"Something horribly wrong happened at line {current_line + 1}.\n")
+#         # If all else fails, something went horribly wrong
+#         raise Exception(f"Something horribly wrong happened at line {current_line + 1}.\n")
 
-    print("Realignment process completed successfully.")
-    return
-
-
-def raise_chaos(chaos, increase=0):
-    new_chaos = chaos + increase
-    print(f"Raising chaos by {increase}, current chaos: {new_chaos}")
-    return new_chaos
+#     print("Realignment process completed successfully.")
+#     return
 
 
-def lower_chaos(chaos, decrease=1):
-    new_chaos = chaos - decrease
-    if new_chaos < 0:
-        new_chaos = 0
-    if decrease != 1:
-        print(f"Decreasing chaos by {decrease}, current chaos: {new_chaos}")
-    return new_chaos
+# def raise_chaos(chaos, increase=0):
+#     new_chaos = chaos + increase
+#     print(f"Raising chaos by {increase}, current chaos: {new_chaos}")
+#     return new_chaos
+
+
+# def lower_chaos(chaos, decrease=1):
+#     new_chaos = chaos - decrease
+#     if new_chaos < 0:
+#         new_chaos = 0
+#     if decrease != 1:
+#         print(f"Decreasing chaos by {decrease}, current chaos: {new_chaos}")
+#     return new_chaos
 
 
 def initialize_list_for_content(content):
