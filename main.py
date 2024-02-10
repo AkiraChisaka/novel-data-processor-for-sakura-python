@@ -44,11 +44,16 @@ def write_file(file_path, content):
 
 
 def preprocess_content(content):
-    # Apply any content processing, starting with removing multiple newlines
+    # Temporarily add a newline at the start and end of the content
+    content = '\n' + content + '\n'
+
+    # Apply content processing
     content = remove_multiple_newlines(content)
-    # Remove spaces and Japanese spaces surrounding newlines
     content = remove_surrounding_symbols(content, ' ')  # For regular spaces
     content = remove_surrounding_symbols(content, '　')  # For Japanese full-width spaces
+
+    # Remove the temporarily added newlines at the start and end
+    content = content[1:-1]
 
     return content
 
