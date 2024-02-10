@@ -24,11 +24,38 @@ def process_files(jp_file_path, cn_file_path):
     jp_content = preprocess_content(jp_content)
     cn_content = preprocess_content(cn_content)
 
+    # Initialize lists based on the content line count
+    jp_list = initialize_list_for_content(jp_content)
+    cn_list = initialize_list_for_content(cn_content)
+
+    # Loop through each symbol and fill the lists with occurrences
+    for symbol in ["「", "」", "『", "』"]:
+        fill_list_with_anchors(jp_content, jp_list, symbol)
+        fill_list_with_anchors(cn_content, cn_list, symbol)
+
+    # Print the processed lists
+    print_list_readable(jp_list)
+    print_list_readable(cn_list)
+
     # Overwrite the original files with the processed content
     write_file(jp_file_path, jp_content)
     write_file(cn_file_path, cn_content)
 
     print("Files have been processed and overwritten with cleaned content.")
+
+
+def initialize_list_for_content(content):
+    lines = content.split('\n')
+    # Initialize a list with an empty list for each line of content
+    return [[] for _ in lines]
+
+
+def fill_list_with_anchors(content, content_list, symbol):
+    lines = content.split('\n')
+    for index, line in enumerate(lines):
+        if symbol in line:
+            # Assuming you want to store the line itself or just mark the presence of the symbol
+            content_list[index].append(symbol)  # Or append(line) to store the whole line
 
 
 def read_file(file_path):
@@ -69,6 +96,11 @@ def remove_surrounding_symbols(content, symbol):
     # and at the start of a line after a newline
     pattern = re.escape(symbol) + r'?\n' + re.escape(symbol) + r'?'
     return re.sub(pattern, '\n', content)
+
+
+def print_list_readable(lst):
+    for index, sublist in enumerate(lst):
+        print(f"Line {index + 1}: {sublist}")
 
 
 if __name__ == "__main__":
