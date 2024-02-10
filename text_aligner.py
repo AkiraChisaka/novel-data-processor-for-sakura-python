@@ -46,13 +46,13 @@ class TextAligner:
             # If one of the lines is empty, add an error correct line to the other list
             elif self.jp_lines[self.current_line][1:] == []:
                 print("JP line is empty. Adding an error correct line to the CN list.")
-                self.cn_lines.insert(self.current_line, [';'])
+                self.cn_lines.insert(self.current_line, [';', ';'])
                 self.raise_chaos(CHAOS_RISE_ON_SIMPLE_LINE_FIX)
                 self.current_line += 1
                 continue
             elif self.cn_lines[self.current_line][1:] == []:
                 print("CN line is empty. Adding an error correct line to the JP list.")
-                self.jp_lines.insert(self.current_line, [';'])
+                self.jp_lines.insert(self.current_line, [';', ';'])
                 self.raise_chaos(CHAOS_RISE_ON_SIMPLE_LINE_FIX)
                 self.current_line += 1
                 continue

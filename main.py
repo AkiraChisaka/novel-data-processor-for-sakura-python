@@ -1,5 +1,4 @@
 import argparse  # Import the argparse module
-import re  # Import the regular expressions module
 
 
 from text_aligner import TextAligner
