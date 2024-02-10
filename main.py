@@ -31,14 +31,16 @@ def core(jp_file_path, cn_file_path):
     # Loop through each symbol and fill the lists with occurrences
     anchor_symbols = ["「", "」", "『", "』"]
     for symbol in anchor_symbols:
-        fill_list_with_anchors(jp_content, jp_lines, symbol)
-        fill_list_with_anchors(cn_content, cn_lines, symbol)
+        fill_list_with_anchors(jp_lines, symbol)
+        fill_list_with_anchors(cn_lines, symbol)
 
     # Print the processed lists
     print("\nJP List:")
     print_list_readable(jp_lines)
     print("\nCN List:")
     print_list_readable(cn_lines)
+
+    # realign_texts(jp_lines, cn_lines)
 
     # Overwrite the original files with the processed content
     write_file(jp_file_path, jp_content)
@@ -47,10 +49,10 @@ def core(jp_file_path, cn_file_path):
     print("Files have been processed and overwritten with cleaned content.")
 
 
-def realign_texts(jp_content, cn_content, jp_list, cn_list):
-    # Convert content back to lists of lines for easy manipulation
-    jp_lines = jp_content.split('\n')
-    cn_lines = cn_content.split('\n')
+# def realign_texts(jp_lines, cn_lines):
+#     # Convert content back to lists of lines for easy manipulation
+#     jp_lines = jp_content.split('\n')
+#     cn_lines = cn_content.split('\n')
 
 
 def initialize_list_for_content(content):
@@ -59,12 +61,12 @@ def initialize_list_for_content(content):
     return [[line] for line in lines]
 
 
-def fill_list_with_anchors(content, content_line, symbol):
-    lines = content.split('\n')
+def fill_list_with_anchors(content_lines, symbol):
+    lines = [entry[0] for entry in content_lines]
     for index, line in enumerate(lines):
         if symbol in line:
             # Assuming you want to store the line itself or just mark the presence of the symbol
-            content_line[index].append(symbol)  # Or append(line) to store the whole line
+            content_lines[index].append(symbol)  # Or append(line) to store the whole line
 
 
 def read_file(file_path):
