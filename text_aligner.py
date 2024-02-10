@@ -1,4 +1,4 @@
-from settings import INITIAL_CHAOS, ANCHOR_SYMBOLS, MAX_CHAOS_PERMITTED, CHAOS_RISE_ON_SIMPLE_LINE_FIX
+from settings import INITIAL_CHAOS, ANCHOR_SYMBOLS, MAX_CHAOS_PERMITTED, CHAOS_RISE_ON_SIMPLE_LINE_FIX, CHAOS_RISE_ON_COMPLEX_LINE_FIX
 from exceptions import ChaosOverflow, RealignmentFailed
 
 
@@ -41,6 +41,21 @@ class TextAligner:
             print(f"Difference occurred at line {self.current_line + 1}.")
             if self.jp_lines[self.current_line][1:] != [] and self.cn_lines[self.current_line][1:] != []:
                 # TODO implement further processing to handle the case where both lines are not empty
+                if self.current_line + 1 < len(self.jp_lines) and \
+                        ('「' in self.jp_lines[self.current_line][0] and '」' not in self.jp_lines[self.current_line][0]):
+                    print("JP line is split. Adding an error correct line to the CN list.")
+                    self.cn_lines.insert(self.current_line, [';'])
+                    self.raise_chaos(CHAOS_RISE_ON_COMPLEX_LINE_FIX)
+                    self.current_line += 2
+                    continue
+                elif self.current_line + 1 < len(self.cn_lines) and \
+                        ('「' in self.cn_lines[self.current_line][0] and '」' not in self.cn_lines[self.current_line][0]):
+                    print("CN line is split. Adding an error correct line to the JP list.")
+                    self.jp_lines.insert(self.current_line, [';'])
+                    self.raise_chaos(CHAOS_RISE_ON_COMPLEX_LINE_FIX)
+                    self.current_line += 2
+                    continue
+
                 raise RealignmentFailed(self.current_line, "Both lines are not empty.")
 
             # If one of the lines is empty, add an error correct line to the other list
