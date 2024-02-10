@@ -25,20 +25,20 @@ def core(jp_file_path, cn_file_path):
     cn_content = preprocess_content(cn_content)
 
     # Initialize lists based on the content line count
-    jp_list = initialize_list_for_content(jp_content)
-    cn_list = initialize_list_for_content(cn_content)
+    jp_lines = initialize_list_for_content(jp_content)
+    cn_lines = initialize_list_for_content(cn_content)
 
     # Loop through each symbol and fill the lists with occurrences
     anchor_symbols = ["「", "」", "『", "』"]
     for symbol in anchor_symbols:
-        fill_list_with_anchors(jp_content, jp_list, symbol)
-        fill_list_with_anchors(cn_content, cn_list, symbol)
+        fill_list_with_anchors(jp_content, jp_lines, symbol)
+        fill_list_with_anchors(cn_content, cn_lines, symbol)
 
     # Print the processed lists
     print("\nJP List:")
-    print_list_readable(jp_list)
+    print_list_readable(jp_lines)
     print("\nCN List:")
-    print_list_readable(cn_list)
+    print_list_readable(cn_lines)
 
     # Overwrite the original files with the processed content
     write_file(jp_file_path, jp_content)
@@ -47,18 +47,24 @@ def core(jp_file_path, cn_file_path):
     print("Files have been processed and overwritten with cleaned content.")
 
 
+def realign_texts(jp_content, cn_content, jp_list, cn_list):
+    # Convert content back to lists of lines for easy manipulation
+    jp_lines = jp_content.split('\n')
+    cn_lines = cn_content.split('\n')
+
+
 def initialize_list_for_content(content):
     lines = content.split('\n')
     # Initialize a list with an empty list for each line of content
-    return [[] for _ in lines]
+    return [[line] for line in lines]
 
 
-def fill_list_with_anchors(content, content_list, symbol):
+def fill_list_with_anchors(content, content_line, symbol):
     lines = content.split('\n')
     for index, line in enumerate(lines):
         if symbol in line:
             # Assuming you want to store the line itself or just mark the presence of the symbol
-            content_list[index].append(symbol)  # Or append(line) to store the whole line
+            content_line[index].append(symbol)  # Or append(line) to store the whole line
 
 
 def read_file(file_path):
@@ -102,9 +108,15 @@ def remove_surrounding_symbols(content, symbol):
 
 
 def print_list_readable(lst):
+    max_line_number = len(str(len(lst)))  # Get the maximum number of digits in the line number
     for index, sublist in enumerate(lst):
-        if sublist:
-            print(f"Line {index + 1}: {sublist}")
+        if len(sublist) > 1:
+            line_number = index + 1
+            print(f"Line {line_number:>{max_line_number}}: ", end="")
+            for item in sublist[1:]:
+                print(item, end=" ")
+            print()
+
 
 if __name__ == "__main__":
     main()
