@@ -2,7 +2,7 @@ from settings import INITIAL_CHAOS, ANCHOR_SYMBOLS, MAX_CHAOS_PERMITTED, CHAOS_R
 from exceptions import ChaosOverflow, RealignmentFailed
 
 
-class TextAlignment:
+class TextAligner:
     """
     This class is used to align two lists of text lines.
     """
