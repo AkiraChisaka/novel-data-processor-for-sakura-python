@@ -35,7 +35,7 @@ def core(jp_file_path, cn_file_path):
 
     try:
         # Test
-        raise ChaosOverflow(1000, 10)
+        # raise ChaosOverflow(1000, 10)
         aligner.realign_texts()
     except ChaosOverflow as e:
         print("Realignment process ended due to Chaos Overflow:", e)
