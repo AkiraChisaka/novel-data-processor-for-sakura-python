@@ -27,8 +27,6 @@ class TextAlignment:
             # print(f"self.chaos: {self.chaos}")
 
             # If the chaos intensity is too high, this means that the lists are too different and we should stop
-            # print(f"self.chaos: {self.chaos}")
-            # print(f"MAX_CHAOS_PERMITTED: {MAX_CHAOS_PERMITTED}")
             if self.chaos > MAX_CHAOS_PERMITTED:
                 raise ChaosOverflow(self.current_line, self.chaos)
 

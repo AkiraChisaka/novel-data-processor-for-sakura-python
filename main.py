@@ -58,20 +58,6 @@ def core(jp_file_path, cn_file_path):
     print("Files have been processed and overwritten.\n\n-----\n")
 
 
-# def initialize_list_for_content(content):
-#     lines = content.split('\n')
-#     # Initialize a list with an empty list for each line of content
-#     return [[line] for line in lines]
-
-
-# def fill_list_with_anchors(content_lines, symbol):
-#     lines = [entry[0] for entry in content_lines]
-#     for index, line in enumerate(lines):
-#         if symbol in line:
-#             # Assuming you want to store the line itself or just mark the presence of the symbol
-#             content_lines[index].append(symbol)  # Or append(line) to store the whole line
-
-
 def read_file(file_path):
     # Read and return the content of a file
     with open(file_path, 'r', encoding='utf-8') as file:
