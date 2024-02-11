@@ -8,11 +8,11 @@ def test_initialize_list_for_content():
     assert aligner.initialize_list_for_content(content) == expected
 
 
-def test_fill_list_with_anchors():
-    content = "line1\nline2\nline3"
+def test_fill_list_with_anchors_auto():
+    content = "line1\n「line2」\nline3"
+    # Initialize the list with the content should automatically fill the list with anchors as specified by settings.py
     aligner = TextAligner(content, content)
-    aligner.fill_list_with_anchors(aligner.jp_lines, '1')
-    expected = [['line1', '1'], ['line2'], ['line3']]
+    expected = [['line1'], ['「line2」', '「', '」'], ['line3']]
     assert aligner.jp_lines == expected
 
 
