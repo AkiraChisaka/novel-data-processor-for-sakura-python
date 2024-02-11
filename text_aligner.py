@@ -54,17 +54,17 @@ class TextAligner:
                 self.current_line += 1
                 continue
             # If both lines are not empty, we need to do further processing
-            if self.current_line + 1 < len(self.jp_lines) and \
-                    ('「' in self.jp_lines[self.current_line][0] and '」' not in self.jp_lines[self.current_line][0]):
-                print("JP line is split. Adding an error correct line to the CN list.")
-                self.cn_lines.insert(self.current_line, [';'])
-                self.raise_chaos(CHAOS_RISE_ON_COMPLEX_LINE_FIX)
-                self.current_line += 2
-                continue
             elif self.current_line + 1 < len(self.cn_lines) and \
                     ('「' in self.cn_lines[self.current_line][0] and '」' not in self.cn_lines[self.current_line][0]):
                 print("CN line is split. Adding an error correct line to the JP list.")
                 self.jp_lines.insert(self.current_line, [';'])
+                self.raise_chaos(CHAOS_RISE_ON_COMPLEX_LINE_FIX)
+                self.current_line += 2
+                continue
+            elif self.current_line + 1 < len(self.jp_lines) and \
+                    ('「' in self.jp_lines[self.current_line][0] and '」' not in self.jp_lines[self.current_line][0]):
+                print("JP line is split. Adding an error correct line to the CN list.")
+                self.cn_lines.insert(self.current_line, [';'])
                 self.raise_chaos(CHAOS_RISE_ON_COMPLEX_LINE_FIX)
                 self.current_line += 2
                 continue
