@@ -15,6 +15,33 @@ def main():
 
     # Process the files based on the provided arguments
     core(args.jp_file, args.cn_file)
+    # test(args.jp_file, args.cn_file)
+
+
+def test(jp_file_path, cn_file_path):
+    print(f"\Test processing files:\n    {jp_file_path}\n    {cn_file_path}")
+
+    # Read the content of both files
+    jp_content = read_file(jp_file_path)
+    cn_content = read_file(cn_file_path)
+
+    # Process the content of both files
+    jp_content = ContentPreprocessor(jp_content).preprocess_content()
+    cn_content = ContentPreprocessor(cn_content).preprocess_content()
+
+    # Creating an instance of the TextAlignment class to realign the texts
+    aligner = TextAligner(jp_content, cn_content)
+
+    print("Proceeding to overwrite the original files with the processed content.")
+    # Reconstruct the content from the lists
+    jp_content = '\n'.join([sublist[0] for sublist in aligner.jp_lines])
+    cn_content = '\n'.join([sublist[0] for sublist in aligner.cn_lines])
+
+    # Overwrite the original files with the processed content
+    write_file(jp_file_path, jp_content)
+    write_file(cn_file_path, cn_content)
+
+    print("Files have been processed and overwritten.\n\n-----\n")
 
 
 def core(jp_file_path, cn_file_path):

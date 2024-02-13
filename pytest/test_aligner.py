@@ -1,3 +1,4 @@
+from settings import ERROR_CORRECT_LINE
 from text_aligner import TextAligner
 
 
@@ -26,6 +27,6 @@ def test_is_line_empty():
 def test_insert_error_correction_line():
     aligner = TextAligner("", "")
     aligner.insert_error_correction_line(aligner.jp_lines, 0)
-    assert aligner.jp_lines[0] == [';']
+    assert aligner.jp_lines[0] == [ERROR_CORRECT_LINE]
     aligner.insert_error_correction_line(aligner.cn_lines, 0)
-    assert aligner.cn_lines[0] == [';']
+    assert aligner.cn_lines[0] == [ERROR_CORRECT_LINE]

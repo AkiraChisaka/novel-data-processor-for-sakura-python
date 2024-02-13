@@ -1,4 +1,4 @@
-from settings import INITIAL_CHAOS, ANCHOR_SYMBOLS, MAX_CHAOS_PERMITTED, CHAOS_RISE_ON_SIMPLE_LINE_FIX, CHAOS_RISE_ON_COMPLEX_LINE_FIX
+from settings import ERROR_CORRECT_LINE, INITIAL_CHAOS, ANCHOR_SYMBOLS, MAX_CHAOS_PERMITTED, CHAOS_RISE_ON_SIMPLE_LINE_FIX, CHAOS_RISE_ON_COMPLEX_LINE_FIX
 from exceptions import ChaosOverflow, RealignmentFailed
 
 
@@ -103,12 +103,12 @@ class TextAligner:
 
     @staticmethod
     def insert_error_correction_line(line_list, current_line):
-        line_list.insert(current_line, [';'])
+        line_list.insert(current_line, [ERROR_CORRECT_LINE])
 
     def remove_duplicated_error_correction_lines(self):
         index = 0
         while index < len(self.jp_lines) and index < len(self.cn_lines):
-            if self.jp_lines[index] == [';'] and self.cn_lines[index] == [';']:
+            if self.jp_lines[index][0] == ERROR_CORRECT_LINE and self.cn_lines[index][0] == ERROR_CORRECT_LINE:
                 del self.jp_lines[index]
                 del self.cn_lines[index]
             else:
