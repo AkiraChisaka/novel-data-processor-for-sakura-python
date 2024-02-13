@@ -9,11 +9,11 @@ class RealignmentFailed(Exception):
         """
         self.current_line = current_line
         super().__init__(f"{message}" +
-                         f"Current line: {current_line + 1}\n")
+                         f"\nCurrent line: {current_line + 1}\n")
 
 
 class ChaosOverflow(RealignmentFailed):
-    def __init__(self, current_line, chaos):
+    def __init__(self, current_line, chaos, likely_issue_line_id):
         """
         Exception raised when the chaos intensity is too high, causing the realignment process to stop.
 
@@ -24,5 +24,6 @@ class ChaosOverflow(RealignmentFailed):
         super().__init__(current_line,
                          f"Chaos intensity too high. Stopping the realignment process.\n" +
                          f"Current line: {current_line + 1}\n" +
+                         f"Likely issue line: {likely_issue_line_id + 1}\n"
                          f"Current chaos intensity: {chaos}\n")
         self.chaos = chaos
