@@ -44,8 +44,10 @@ def core(jp_file_path, cn_file_path):
         print("Realignment process ended due to unforeseen Exception:", e)
         raise e
 
-    print("Proceeding to overwrite the original files with the processed content.")
+    print("Removing duplicated error correction lines.")
+    aligner.remove_duplicated_error_correction_lines()
 
+    print("Proceeding to overwrite the original files with the processed content.")
     # Reconstruct the content from the lists
     jp_content = '\n'.join([sublist[0] for sublist in aligner.jp_lines])
     cn_content = '\n'.join([sublist[0] for sublist in aligner.cn_lines])

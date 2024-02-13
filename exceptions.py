@@ -9,7 +9,7 @@ class RealignmentFailed(Exception):
         """
         self.current_line = current_line
         super().__init__(f"{message}" +
-                         f"Current line: {current_line + 1}\n")
+                         f"\nCurrent line: {current_line + 1}\n")
 
 
 class ChaosOverflow(RealignmentFailed):

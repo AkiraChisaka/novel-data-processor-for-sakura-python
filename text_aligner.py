@@ -37,39 +37,17 @@ class TextAligner:
                 continue
 
             # If the lines differ, we will need to do something about it
-            print(f"Difference occurred at line {self.current_line + 1}.")
+            print(f"\nDifference occurred at line {self.current_line + 1}.")
 
             # See if we can fix the alignment by adding an empty line before one of the lists
             # If one of the lines is empty, add an error correct line to the other list
-            if self.is_line_empty(self.jp_lines[self.current_line]):
-                print("JP line is empty. Adding an error correct line to the CN list.")
-                self.insert_error_correction_line(self.cn_lines, self.current_line)
-                self.raise_chaos(CHAOS_RISE_ON_SIMPLE_LINE_FIX)
-                self.current_line += 1
-                continue
-            elif self.is_line_empty(self.cn_lines[self.current_line]):
-                print("CN line is empty. Adding an error correct line to the JP list.")
-                self.insert_error_correction_line(self.jp_lines, self.current_line)
-                self.raise_chaos(CHAOS_RISE_ON_SIMPLE_LINE_FIX)
-                self.current_line += 1
-                continue
-            # If both lines are not empty, we need to do further processing
-            elif self.current_line + 1 < len(self.cn_lines) and \
-                    ('「' in self.cn_lines[self.current_line][0] and '」' not in self.cn_lines[self.current_line][0]):
-                print("CN line is split. Adding an error correct line to the JP list.")
-                self.jp_lines.insert(self.current_line, [';'])
-                self.raise_chaos(CHAOS_RISE_ON_COMPLEX_LINE_FIX)
-                self.current_line += 2
-                continue
-            elif self.current_line + 1 < len(self.jp_lines) and \
-                    ('「' in self.jp_lines[self.current_line][0] and '」' not in self.jp_lines[self.current_line][0]):
-                print("JP line is split. Adding an error correct line to the CN list.")
-                self.cn_lines.insert(self.current_line, [';'])
-                self.raise_chaos(CHAOS_RISE_ON_COMPLEX_LINE_FIX)
-                self.current_line += 2
+            if self.fix_one_side_being_empty():
                 continue
 
-            raise RealignmentFailed(self.current_line, "Both lines are not empty.")
+            # If both lines are not empty, we need to do further processing
+            # TODO LMAO
+
+            raise RealignmentFailed(self.current_line, "Both lines are not empty, and no simple fix is available.")
 
             # If all else fails, something went horribly wrong
             raise Exception(f"Something horribly wrong happened at line {self.current_line + 1}.\n")
@@ -77,12 +55,33 @@ class TextAligner:
         print("Realignment process completed successfully.")
         return
 
+    def fix_one_side_being_empty(self):
+        if self.is_line_empty(self.jp_lines[self.current_line]):
+            print("JP line is empty. Adding an error correct line to the CN list.")
+            self.insert_error_correction_line(self.cn_lines, self.current_line)
+            self.raise_chaos(CHAOS_RISE_ON_SIMPLE_LINE_FIX)
+            self.current_line += 1
+            return 1
+        elif self.is_line_empty(self.cn_lines[self.current_line]):
+            print("CN line is empty. Adding an error correct line to the JP list.")
+            self.insert_error_correction_line(self.jp_lines, self.current_line)
+            self.raise_chaos(CHAOS_RISE_ON_SIMPLE_LINE_FIX)
+            self.current_line += 1
+            return 1
+        else:
+            return 0
+
+    def remove_duplicated_error_correction_lines(self):
+        index = 0
+        while index < len(self.jp_lines) and index < len(self.cn_lines):
+            if self.jp_lines[index] == [';'] and self.cn_lines[index] == [';']:
+                del self.jp_lines[index]
+                del self.cn_lines[index]
+            else:
+                index += 1
+
     def is_line_empty(self, line):
         return line[1:] == []
-
-    # def handle_empty_line(self, empty_line_list, other_line_list):
-    #     self.insert_error_correction_line(other_line_list, self.current_line)
-    #     self.raise_chaos(CHAOS_RISE_ON_SIMPLE_LINE_FIX)
 
     def raise_chaos(self, increase=0):
         self.chaos += increase
