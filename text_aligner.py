@@ -52,7 +52,6 @@ class TextAligner:
                 continue
 
             # If both lines are not empty, we need to do further processing
-            # TODO LMAO
             if self.fix_bracket_quotes_being_split():
                 continue
 
@@ -65,18 +64,22 @@ class TextAligner:
         return
 
     def fix_bracket_quotes_being_split(self):
-        if '「' in self.jp_lines[self.current_line_id] and '」' not in self.jp_lines[self.current_line_id]:
-            for end_line in range(self.current_line_id + 1, min(self.current_line_id + 6, len(self.jp_lines))):
-                if '」' in self.jp_lines[end_line]:
-                    self.combine_lines(self.jp_lines, self.current_line_id, end_line)
-                    return 1
-            raise RealignmentFailed(self.current_line_id, "Quotes correction failed.")
-        elif '「' in self.cn_lines[self.current_line_id] and '」' not in self.cn_lines[self.current_line_id]:
-            for end_line in range(self.current_line_id + 1, min(self.current_line_id + 6, len(self.cn_lines))):
-                if '」' in self.cn_lines[end_line]:
-                    self.combine_lines(self.cn_lines, self.current_line_id, end_line)
-                    return 1
-            raise RealignmentFailed(self.current_line_id, "Quotes correction failed.")
+        for quote_symbols in ANCHOR_SYMBOLS_QUOTE:
+            start_quote, end_quote = quote_symbols
+            if start_quote in self.jp_lines[self.current_line_id] and end_quote not in self.jp_lines[self.current_line_id]:
+                for end_line in range(self.current_line_id + 1, min(self.current_line_id + 6, len(self.jp_lines))):
+                    if '」' in self.jp_lines[end_line]:
+                        self.combine_lines(self.jp_lines, self.current_line_id, end_line)
+                        self.raise_chaos(CHAOS_RISE_ON_COMPLEX_LINE_FIX)
+                        return 1
+                raise RealignmentFailed(self.current_line_id, "Quotes correction failed.")
+            elif start_quote in self.cn_lines[self.current_line_id] and end_quote not in self.cn_lines[self.current_line_id]:
+                for end_line in range(self.current_line_id + 1, min(self.current_line_id + 6, len(self.cn_lines))):
+                    if end_quote in self.cn_lines[end_line]:
+                        self.combine_lines(self.cn_lines, self.current_line_id, end_line)
+                        self.raise_chaos(CHAOS_RISE_ON_COMPLEX_LINE_FIX)
+                        return 1
+                raise RealignmentFailed(self.current_line_id, "Quotes correction failed.")
         return 0
 
     @staticmethod
@@ -89,7 +92,7 @@ class TextAligner:
                 if symbol not in combined_line:
                     combined_line.append(symbol)
         print(f"Combined line: {combined_line}")
-        line_list[start_line_id:end_line_id+1] = [combined_line]
+        line_list[start_line_id:end_line_id + 1] = [combined_line]
 
     def fix_simple_misalignment(self):
         if self.is_line_empty(self.jp_lines[self.current_line_id]):
