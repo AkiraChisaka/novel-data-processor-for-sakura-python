@@ -11,8 +11,9 @@ class TextAligner:
         # Initialize lists based on the content line count
         self.jp_lines = self.initialize_list_for_content(jp_content)
         self.cn_lines = self.initialize_list_for_content(cn_content)
-        self.current_line = 0
+        self.current_line_id = 0
         self.chaos = INITIAL_CHAOS
+        self.likely_issue_line_id = 0
 
         # Loop through each symbol and fill the lists with occurrences
         self.anchor_symbols = ANCHOR_SYMBOLS
@@ -21,55 +22,88 @@ class TextAligner:
             self.fill_list_with_anchors(self.cn_lines, symbol)
 
     def realign_texts(self):
-        while self.current_line < len(self.jp_lines) and self.current_line < len(self.cn_lines):
+        while self.current_line_id < len(self.jp_lines) and self.current_line_id < len(self.cn_lines):
             # TEST prints
             # print(f"Current line: {current_line + 1}")
             # print(f"self.chaos: {self.chaos}")
 
             # If the chaos intensity is too high, this means that the lists are too different and we should stop
             if self.chaos > MAX_CHAOS_PERMITTED:
-                raise ChaosOverflow(self.current_line, self.chaos)
+                raise ChaosOverflow(self.current_line_id, self.chaos, self.likely_issue_line_id)
+            elif self.chaos <= 5:
+                self.likely_issue_line_id = self.current_line_id
 
             # If the lines are the same, no further processing is needed
-            if self.jp_lines[self.current_line][1:] == self.cn_lines[self.current_line][1:]:
+            if self.jp_lines[self.current_line_id][1:] == self.cn_lines[self.current_line_id][1:]:
                 self.lower_chaos()
-                self.current_line += 1
+                self.current_line_id += 1
                 continue
 
             # If the lines differ, we will need to do something about it
-            print(f"\nDifference occurred at line {self.current_line + 1}.")
+            print(f"\nDifference occurred at line {self.current_line_id + 1}.")
 
             # See if we can fix the alignment by adding an empty line before one of the lists
             # If one of the lines is empty, add an error correct line to the other list
-            if self.fix_one_side_being_empty():
+            if self.fix_simple_misalignment():
                 continue
 
             # If both lines are not empty, we need to do further processing
             # TODO LMAO
+            if self.fix_bracket_quotes_being_split():
+                continue
 
-            raise RealignmentFailed(self.current_line, "Both lines are not empty, and no simple fix is available.")
+            raise RealignmentFailed(self.current_line_id, "Both lines are not empty, and no simple fix is available.")
 
             # If all else fails, something went horribly wrong
-            raise Exception(f"Something horribly wrong happened at line {self.current_line + 1}.\n")
+            raise Exception(f"Something horribly wrong happened at line {self.current_line_id + 1}.\n")
 
         print("Realignment process completed successfully.")
         return
 
-    def fix_one_side_being_empty(self):
-        if self.is_line_empty(self.jp_lines[self.current_line]):
+    def fix_bracket_quotes_being_split(self):
+
+        if '「' in self.jp_lines[self.current_line_id] and '」' not in self.jp_lines[self.current_line_id]:
+            for end_line in range(self.current_line_id + 1, min(self.current_line_id + 6, len(self.jp_lines))):
+                if '」' in self.jp_lines[end_line]:
+                    self.combine_lines(self.jp_lines, self.current_line_id, end_line)
+                    return 1
+            raise RealignmentFailed(self.current_line_id, "Quotes correction failed.")
+        elif '「' in self.cn_lines[self.current_line_id] and '」' not in self.cn_lines[self.current_line_id]:
+            for end_line in range(self.current_line_id + 1, min(self.current_line_id + 6, len(self.cn_lines))):
+                if '」' in self.cn_lines[end_line]:
+                    self.combine_lines(self.cn_lines, self.current_line_id, end_line)
+                    return 1
+            raise RealignmentFailed(self.current_line_id, "Quotes correction failed.")
+        return 0
+
+    @staticmethod
+    def combine_lines(line_list, start_line_id, end_line_id):
+        combined_line = [""]
+        for line_id in range(start_line_id, end_line_id + 1):
+            print(f"end_line_id: {end_line_id}, line_id: {line_id}")
+            combined_line[0] += line_list[line_id][0]
+            for symbol in line_list[line_id][1:]:
+                if symbol not in combined_line:
+                    combined_line.append(symbol)
+        print(f"Combined line: {combined_line}")
+        line_list[start_line_id:end_line_id+1] = [combined_line]
+
+    def fix_simple_misalignment(self):
+        if self.is_line_empty(self.jp_lines[self.current_line_id]):
             print("JP line is empty. Adding an error correct line to the CN list.")
-            self.insert_error_correction_line(self.cn_lines, self.current_line)
+            self.insert_error_correction_line(self.cn_lines, self.current_line_id)
             self.raise_chaos(CHAOS_RISE_ON_SIMPLE_LINE_FIX)
-            self.current_line += 1
             return 1
-        elif self.is_line_empty(self.cn_lines[self.current_line]):
+        elif self.is_line_empty(self.cn_lines[self.current_line_id]):
             print("CN line is empty. Adding an error correct line to the JP list.")
-            self.insert_error_correction_line(self.jp_lines, self.current_line)
+            self.insert_error_correction_line(self.jp_lines, self.current_line_id)
             self.raise_chaos(CHAOS_RISE_ON_SIMPLE_LINE_FIX)
-            self.current_line += 1
             return 1
-        else:
-            return 0
+        return 0
+
+    @staticmethod
+    def insert_error_correction_line(line_list, current_line):
+        line_list.insert(current_line, [';'])
 
     def remove_duplicated_error_correction_lines(self):
         index = 0
@@ -96,10 +130,6 @@ class TextAligner:
         if decrease != 1:
             print(f"Decreasing chaos by {decrease}, current chaos: {self.chaos}")
             return
-
-    @staticmethod
-    def insert_error_correction_line(line_list, current_line):
-        line_list.insert(current_line, [';'])
 
     @staticmethod
     def initialize_list_for_content(content):
