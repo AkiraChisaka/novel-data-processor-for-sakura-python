@@ -1,4 +1,4 @@
-from settings import ERROR_CORRECT_LINE, INITIAL_CHAOS, ANCHOR_SYMBOLS, MAX_CHAOS_PERMITTED, CHAOS_RISE_ON_SIMPLE_LINE_FIX, CHAOS_RISE_ON_COMPLEX_LINE_FIX
+from settings import ERROR_CORRECT_LINE_SYMBOL, INITIAL_CHAOS, MAX_CHAOS_PERMITTED, CHAOS_RISE_ON_SIMPLE_LINE_FIX, CHAOS_RISE_ON_COMPLEX_LINE_FIX, ANCHOR_SYMBOLS_QUOTE, ANCHOR_SYMBOLS_STAND_ALONE
 from exceptions import ChaosOverflow, RealignmentFailed
 
 
@@ -16,7 +16,11 @@ class TextAligner:
         self.likely_issue_line_id = 0
 
         # Loop through each symbol and fill the lists with occurrences
-        self.anchor_symbols = ANCHOR_SYMBOLS
+        self.anchor_symbols = []
+        for quote_pair in ANCHOR_SYMBOLS_QUOTE:
+            self.anchor_symbols.extend(quote_pair)
+        self.anchor_symbols.extend(ANCHOR_SYMBOLS_STAND_ALONE)
+
         for symbol in self.anchor_symbols:
             self.fill_list_with_anchors(self.jp_lines, symbol)
             self.fill_list_with_anchors(self.cn_lines, symbol)
@@ -61,7 +65,6 @@ class TextAligner:
         return
 
     def fix_bracket_quotes_being_split(self):
-
         if '「' in self.jp_lines[self.current_line_id] and '」' not in self.jp_lines[self.current_line_id]:
             for end_line in range(self.current_line_id + 1, min(self.current_line_id + 6, len(self.jp_lines))):
                 if '」' in self.jp_lines[end_line]:
@@ -103,12 +106,12 @@ class TextAligner:
 
     @staticmethod
     def insert_error_correction_line(line_list, current_line):
-        line_list.insert(current_line, [ERROR_CORRECT_LINE])
+        line_list.insert(current_line, [ERROR_CORRECT_LINE_SYMBOL])
 
     def remove_duplicated_error_correction_lines(self):
         index = 0
         while index < len(self.jp_lines) and index < len(self.cn_lines):
-            if self.jp_lines[index][0] == ERROR_CORRECT_LINE and self.cn_lines[index][0] == ERROR_CORRECT_LINE:
+            if self.jp_lines[index][0] == ERROR_CORRECT_LINE_SYMBOL and self.cn_lines[index][0] == ERROR_CORRECT_LINE_SYMBOL:
                 del self.jp_lines[index]
                 del self.cn_lines[index]
             else:

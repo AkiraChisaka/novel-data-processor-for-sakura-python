@@ -1,6 +1,6 @@
 import re
 
-from settings import ERROR_CORRECT_LINE
+from settings import ERROR_CORRECT_LINE_SYMBOL
 
 
 class ContentPreprocessor:
@@ -37,4 +37,4 @@ class ContentPreprocessor:
         # Use a regular expression to match lines containing only a semicolon
         # '^' matches the start of a line, '\s*' matches any number of whitespace characters,
         # ';' matches the semicolon, '\s*$' matches any number of whitespace characters at the end of a line
-        self.content = re.sub(rf'^\s*{re.escape(ERROR_CORRECT_LINE)}\s*$', '', self.content, flags=re.MULTILINE)
+        self.content = re.sub(rf'^\s*{re.escape(ERROR_CORRECT_LINE_SYMBOL)}\s*$', '', self.content, flags=re.MULTILINE)
