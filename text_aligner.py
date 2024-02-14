@@ -60,7 +60,7 @@ class TextAligner:
             # If all else fails, something went horribly wrong
             raise Exception(f"Something horribly wrong happened at line {self.current_line_id + 1}.\n")
 
-        print("Realignment process completed successfully.")
+        print("REALIGNMENT PROCESS COMPLETED SUCCESSFULLY!!!")
         return
 
     def fix_bracket_quotes_being_split(self):

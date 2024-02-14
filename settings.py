@@ -2,12 +2,15 @@
 ANCHOR_SYMBOLS_QUOTE = [
     ["「", "」"],
     ["『", "』"],
+    ["＜", "＞"],
+    ["（", "）"],
     ["\"", "\""],
 ]
 ANCHOR_SYMBOLS_STAND_ALONE = [
     "－－－－－－",
     "§",
     "＊",
+    "*",
 ]
 ERROR_CORRECT_LINE_SYMBOL = ";"
 INITIAL_CHAOS = 0
