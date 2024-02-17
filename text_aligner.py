@@ -14,6 +14,7 @@ class TextAligner:
         self.current_line_id = 0
         self.chaos = INITIAL_CHAOS
         self.likely_issue_line_id = 0
+        self.untouched = True
 
         # Loop through each symbol and fill the lists with occurrences
         self.anchor_symbols = []
@@ -45,6 +46,7 @@ class TextAligner:
 
             # If the lines differ, we will need to do something about it
             print(f"\nDifference occurred at line {self.current_line_id + 1}.")
+            self.untouched = False
 
             # See if we can fix the alignment by adding an empty line before one of the lists
             # If one of the lines is empty, add an error correct line to the other list
@@ -60,7 +62,10 @@ class TextAligner:
             # If all else fails, something went horribly wrong
             raise Exception(f"Something horribly wrong happened at line {self.current_line_id + 1}.\n")
 
-        print("REALIGNMENT PROCESS COMPLETED SUCCESSFULLY!!!")
+        if self.untouched:
+            print("[UNTOUCHED] No differences found between the two files. No realignment needed.")
+        else:
+            print("[SUCCESS] Realignment completed.")
         return
 
     def fix_bracket_quotes_being_split(self):
