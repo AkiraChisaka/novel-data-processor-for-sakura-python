@@ -125,7 +125,7 @@ class TextAligner:
 
     def raise_chaos(self, increase=0):
         self.chaos += increase
-        print(f"Raising chaos by {increase}, current chaos: {self.chaos}")
+        # print(f"Raising chaos by {increase}, current chaos: {self.chaos}")
         return
 
     def lower_chaos(self, decrease=1):
@@ -134,7 +134,7 @@ class TextAligner:
             self.chaos = 0
             return
         if decrease != 1:
-            print(f"Decreasing chaos by {decrease}, current chaos: {self.chaos}")
+            # print(f"Decreasing chaos by {decrease}, current chaos: {self.chaos}")
             return
 
     @staticmethod
