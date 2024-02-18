@@ -2,6 +2,7 @@
 ANCHOR_SYMBOLS_QUOTE = [
     ["「", "」"],
     ["『", "』"],
+    ["【", "】"],
     ["＜", "＞"],
     ["（", "）"],
     ["(", ")"],
@@ -12,6 +13,12 @@ ANCHOR_SYMBOLS_STAND_ALONE = [
     "§",
     "＊",
     "*",
+    "→",
+    "①",
+    "②",
+    "③",
+    "④",
+    "⑤",
 ]
 ERROR_CORRECT_LINE_SYMBOL = ";"
 INITIAL_CHAOS = 0
