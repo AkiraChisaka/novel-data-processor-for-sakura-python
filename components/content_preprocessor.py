@@ -1,6 +1,6 @@
 import re
 
-from settings import ERROR_CORRECT_LINE_SYMBOL
+from settings import ERROR_CORRECT_LINE_SYMBOL, REPLACEMENT_SYMBOLS
 
 
 class ContentPreprocessor:
@@ -16,6 +16,7 @@ class ContentPreprocessor:
         self.remove_surrounding_symbols('　')  # For Japanese full-width spaces
         self.remove_error_correction_lines()
         self.remove_multiple_newlines()
+        self.replace_symbols()
 
         # Remove the temporarily added newlines at the start and end
         self.content = self.content[1:-1]
@@ -38,3 +39,11 @@ class ContentPreprocessor:
         # '^' matches the start of a line, '\s*' matches any number of whitespace characters,
         # ';' matches the semicolon, '\s*$' matches any number of whitespace characters at the end of a line
         self.content = re.sub(rf'^\s*{re.escape(ERROR_CORRECT_LINE_SYMBOL)}\s*$', '', self.content, flags=re.MULTILINE)
+
+    def replace_symbols(self):
+        for old_symbol, new_symbol in REPLACEMENT_SYMBOLS.items():
+            self.replace_symbol(old_symbol, new_symbol)
+
+    def replace_symbol(self, old_symbol, new_symbol):
+        # Use a regular expression to replace all occurrences of old_symbol with new_symbol
+        self.content = re.sub(re.escape(old_symbol), new_symbol, self.content)

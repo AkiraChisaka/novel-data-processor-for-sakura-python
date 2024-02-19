@@ -1,9 +1,9 @@
 import argparse  # Import the argparse module
 
 
-from text_aligner import TextAligner
-from content_preprocessor import ContentPreprocessor
-from exceptions import ChaosOverflow, RealignmentFailed
+from components.text_aligner import TextAligner
+from components.content_preprocessor import ContentPreprocessor
+from components.exceptions import ChaosOverflow, RealignmentFailed
 
 
 def main():

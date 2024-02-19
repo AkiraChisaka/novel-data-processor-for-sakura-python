@@ -1,5 +1,5 @@
 from settings import ERROR_CORRECT_LINE_SYMBOL
-from text_aligner import TextAligner
+from components.text_aligner import TextAligner
 
 
 def test_initialize_list_for_content():

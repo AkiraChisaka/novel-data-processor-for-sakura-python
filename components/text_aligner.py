@@ -1,5 +1,5 @@
 from settings import ERROR_CORRECT_LINE_SYMBOL, INITIAL_CHAOS, MAX_CHAOS_PERMITTED, CHAOS_RISE_ON_SIMPLE_LINE_FIX, CHAOS_RISE_ON_COMPLEX_LINE_FIX, QUOTE_ANCHOR_SYMBOLS, ANCHOR_SYMBOLS
-from exceptions import ChaosOverflow, RealignmentFailed
+from components.exceptions import ChaosOverflow, RealignmentFailed
 
 
 class TextAligner:
@@ -61,6 +61,9 @@ class TextAligner:
 
             # If all else fails, something went horribly wrong
             raise Exception(f"Something horribly wrong happened at line {self.current_line_id + 1}.\n")
+        
+        if len(self.jp_lines) != len(self.cn_lines):
+            raise RealignmentFailed(self.current_line_id, "The two files have different line counts.")
 
         if self.untouched:
             print("[UNTOUCHED] No differences found between the two files. No realignment needed.")
