@@ -1,4 +1,4 @@
-from settings import ERROR_CORRECT_LINE_SYMBOL, INITIAL_CHAOS, MAX_CHAOS_PERMITTED, CHAOS_RISE_ON_SIMPLE_LINE_FIX, CHAOS_RISE_ON_COMPLEX_LINE_FIX, ANCHOR_SYMBOLS_QUOTE, ANCHOR_SYMBOLS_STAND_ALONE
+from settings import ERROR_CORRECT_LINE_SYMBOL, INITIAL_CHAOS, MAX_CHAOS_PERMITTED, CHAOS_RISE_ON_SIMPLE_LINE_FIX, CHAOS_RISE_ON_COMPLEX_LINE_FIX, QUOTE_ANCHOR_SYMBOLS, ANCHOR_SYMBOLS
 from exceptions import ChaosOverflow, RealignmentFailed
 
 
@@ -18,9 +18,9 @@ class TextAligner:
 
         # Loop through each symbol and fill the lists with occurrences
         self.anchor_symbols = []
-        for quote_pair in ANCHOR_SYMBOLS_QUOTE:
+        for quote_pair in QUOTE_ANCHOR_SYMBOLS:
             self.anchor_symbols.extend(quote_pair)
-        self.anchor_symbols.extend(ANCHOR_SYMBOLS_STAND_ALONE)
+        self.anchor_symbols.extend(ANCHOR_SYMBOLS)
 
         for symbol in self.anchor_symbols:
             self.fill_list_with_anchors(self.jp_lines, symbol)
@@ -69,7 +69,7 @@ class TextAligner:
         return
 
     def fix_bracket_quotes_being_split(self):
-        for quote_symbols in ANCHOR_SYMBOLS_QUOTE:
+        for quote_symbols in QUOTE_ANCHOR_SYMBOLS:
             start_quote, end_quote = quote_symbols
             if start_quote in self.jp_lines[self.current_line_id] and end_quote not in self.jp_lines[self.current_line_id]:
                 for end_line in range(self.current_line_id + 1, min(self.current_line_id + 6, len(self.jp_lines))):
