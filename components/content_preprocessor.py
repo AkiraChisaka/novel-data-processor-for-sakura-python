@@ -1,6 +1,6 @@
 import re
 
-from settings import ERROR_CORRECT_LINE_SYMBOL, REPLACEMENT_SYMBOLS
+from settings import ERROR_CORRECT_LINE_SYMBOL, REPLACEMENT_SYMBOLS, SURROUNDING_SPACES
 
 
 class ContentPreprocessor:
@@ -12,8 +12,7 @@ class ContentPreprocessor:
         self.content = '\n' + self.content + '\n'
 
         # Apply content processing
-        self.remove_surrounding_symbols(' ')  # For regular spaces
-        self.remove_surrounding_symbols('　')  # For Japanese full-width spaces
+        self.remove_surrounding_spaces()
         self.remove_error_correction_lines()
         self.remove_multiple_newlines()
         self.replace_symbols()
@@ -26,13 +25,22 @@ class ContentPreprocessor:
     def remove_multiple_newlines(self):
         # Use a regular expression to replace two or more consecutive newlines with a single newline
         self.content = re.sub(r'\n{2,}', '\n', self.content)
+    
+    def remove_surrounding_spaces(self):
+        # Use a regular expression to remove spaces before and after each newline
+        for symbol in SURROUNDING_SPACES:
+            while self.remove_surrounding_symbol(symbol):
+                pass
 
-    def remove_surrounding_symbols(self, symbol):
+    def remove_surrounding_symbol(self, symbol):
         # Use a regular expression to remove the specified symbol before and after each newline
         # This pattern targets the symbol occurring at the end of a line before a newline
         # and at the start of a line after a newline
         pattern = re.escape(symbol) + r'?\n' + re.escape(symbol) + r'?'
+        old_length = len(self.content)
         self.content = re.sub(pattern, '\n', self.content)
+        new_length = len(self.content)
+        return old_length != new_length
 
     def remove_error_correction_lines(self):
         # Use a regular expression to match lines containing only a semicolon

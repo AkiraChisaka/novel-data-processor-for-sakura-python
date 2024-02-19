@@ -6,7 +6,13 @@ REPLACEMENT_SYMBOLS = {
     "」": "\"",
     "“": "\"",
     "”": "\"",
+    "·": "・",
 }
+SURROUNDING_SPACES = [
+    # Symbols that should be removed if they are at the start or end of a line
+    " ",
+    "　",
+]
 QUOTE_ANCHOR_SYMBOLS = [
     # Anchor symbols are are quotes so need to be treated differently
     ["「", "」"],
@@ -21,10 +27,12 @@ ANCHOR_SYMBOLS = [
     # Symbols that can be used to anchor lines
     "－",
     "—",
+    # "-",
     "§",
     "＊",
     "*",
     "→",
+    # "・",
     "①",
     "②",
     "③",
