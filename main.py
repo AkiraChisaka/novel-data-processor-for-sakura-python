@@ -85,6 +85,9 @@ def core(jp_file_path, cn_file_path):
 
     print("Files have been processed and overwritten.\n\n-----\n")
 
+    if aligner.to_fix_line_id > 0:
+        print(f"Line to fix: {aligner.to_fix_line_id + 1}")
+
 
 def read_file(file_path):
     # Read and return the content of a file

@@ -15,6 +15,7 @@ class TextAligner:
         self.chaos = INITIAL_CHAOS
         self.likely_issue_line_id = 0
         self.untouched = True
+        self.to_fix_line_id = 0
 
         # Loop through each symbol and fill the lists with occurrences
         self.anchor_symbols = []
@@ -29,7 +30,7 @@ class TextAligner:
     def realign_texts(self):
         while self.current_line_id < len(self.jp_lines) and self.current_line_id < len(self.cn_lines):
             # TEST prints
-            # print(f"Current line: {current_line + 1}")
+            # print(f"Current line: {current_line_id + 1}")
             # print(f"self.chaos: {self.chaos}")
 
             # If the chaos intensity is too high, this means that the lists are too different and we should stop
@@ -45,7 +46,7 @@ class TextAligner:
                 continue
 
             # If the lines differ, we will need to do something about it
-            print(f"\nDifferent Line {self.current_line_id + 1}")
+            print(f"\nDifferent Line: {self.current_line_id + 1}")
             self.untouched = False
 
             # See if we can fix the alignment by adding an empty line before one of the lists
@@ -56,13 +57,16 @@ class TextAligner:
             # If both lines are not empty, we need to do further processing
             if self.fix_bracket_quotes_being_split():
                 continue
-
+            
+            self.update_to_fix_line_id()
             raise RealignmentFailed(self.current_line_id, "Both lines are not empty, and no simple fix is available.")
 
             # If all else fails, something went horribly wrong
+            self.update_to_fix_line_id()
             raise Exception(f"Something horribly wrong happened at line {self.current_line_id + 1}.\n")
         
         if len(self.jp_lines) != len(self.cn_lines):
+            self.update_to_fix_line_id()
             raise RealignmentFailed(self.current_line_id, "The two files have different line counts.")
 
         if self.untouched:
@@ -115,9 +119,13 @@ class TextAligner:
             return 1
         return 0
 
-    @staticmethod
-    def insert_error_correction_line(line_list, current_line):
-        line_list.insert(current_line, [ERROR_CORRECT_LINE_SYMBOL])
+    def insert_error_correction_line(self, line_list, current_line_id):
+        self.update_to_fix_line_id()
+        line_list.insert(current_line_id, [ERROR_CORRECT_LINE_SYMBOL])
+    
+    def update_to_fix_line_id(self):
+        if self.to_fix_line_id == 0:
+            self.to_fix_line_id = self.current_line_id
 
     def remove_duplicated_error_correction_lines(self):
         index = 0
