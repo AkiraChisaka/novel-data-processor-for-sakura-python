@@ -45,7 +45,7 @@ class TextAligner:
                 continue
 
             # If the lines differ, we will need to do something about it
-            print(f"\nDifference occurred at line {self.current_line_id + 1}.")
+            print(f"\nDifferent Line {self.current_line_id + 1}")
             self.untouched = False
 
             # See if we can fix the alignment by adding an empty line before one of the lists
