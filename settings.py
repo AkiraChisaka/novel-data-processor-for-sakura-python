@@ -8,7 +8,7 @@ REPLACEMENT_SYMBOLS = {
 
     "“": "「", "”": "」",
     # "‘": "「", "’": "」", "《": "「", "》": "」",
-    "『": "「", "』": "」",
+    # "『": "「", "』": "」",
     # "‘": "『", "’": "』",
     "·": "・",
     "―": "—",
@@ -16,6 +16,7 @@ REPLACEMENT_SYMBOLS = {
     "?": "？",
     "＊": "*",
     "◆": "*",
+    # "─": "*",
 }
 SURROUNDING_SPACES = [
     # Symbols that should be removed if they are at the start or end of a line
@@ -28,9 +29,8 @@ QUOTE_ANCHOR_SYMBOLS = [
     ["『", "』"],
     ["【", "】"],
     ["＜", "＞"],
-    ["（", "）"],
     # ["(", ")"],
-    ["\"", "\""],
+    # ["\"", "\""],
 ]
 ANCHOR_SYMBOLS = [
     # Symbols that can be used to anchor lines
@@ -42,13 +42,15 @@ ANCHOR_SYMBOLS = [
     "＊",
     "*",
     "→",
-    "○",
+    # "○",
     # "・",
     "①",
     "②",
     "③",
     "④",
     "⑤",
+    "（", 
+    "）",
     # "\"",
     # "…",
 ]
