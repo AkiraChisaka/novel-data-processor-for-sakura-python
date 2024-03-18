@@ -19,7 +19,7 @@ def main():
 
 
 def test(jp_file_path, cn_file_path):
-    print(f"\Test processing files:\n    {jp_file_path}\n    {cn_file_path}")
+    print(f"Test processing files:\n    {jp_file_path}\n    {cn_file_path}")
 
     # Read the content of both files
     jp_content = read_file(jp_file_path)
